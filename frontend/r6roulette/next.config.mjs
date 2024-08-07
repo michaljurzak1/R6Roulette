@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
+const isProd = process.env.NODE_ENV === "production";
+
 const nextConfig = {
-    // basePath: "/r6roulette",
-    output: "export",
+    basePath: isProd ? "/r6roulette" : '',
+    output: 'export',
+    distDir: 'dist',
     reactStrictMode: true,
 };
 
