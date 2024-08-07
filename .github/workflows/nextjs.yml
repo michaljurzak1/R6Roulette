@@ -30,7 +30,7 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        working-directory: ./project-directory  # Set your project directory here
+        working-directory: frontend/r6roulette  # Set your project directory here
     steps:
       - name: Checkout
         uses: actions/checkout@v4
