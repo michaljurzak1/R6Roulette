@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "r6opdb",
+            "database": "${workspaceFolder:R6 Random Operator}/operators.db"
+        }
+    ]
+}
