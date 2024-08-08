@@ -1,8 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import path from 'path';
+import './globals.css';
 import defenders from '../public/defenders.json';
 import attackers from '../public/attackers.json';
 
@@ -11,16 +10,28 @@ interface OperatorsResponse {
   operator_icons: string[];
 }
 
-const OperatorsComponent = () => {
+const OperatorsComponent = ({ bannedOperators }: { bannedOperators: { a: string[], d: string[] } }) => {
   const [bannedOperatorsInfo, setBannedOperatorsInfo] = useState<string[]>([]);
+
+  useEffect(() => {
+    // Combine both arrays into one and set the state
+    const combinedBannedOperators = [...bannedOperators.a, ...bannedOperators.d];
+    setBannedOperatorsInfo(combinedBannedOperators);
+  }, [bannedOperators]);
 
   return (
     <div className="banned-info">
       Banned operators: {bannedOperatorsInfo.length > 0 ? bannedOperatorsInfo.join(', ') : 'None'}
+      <style jsx>{`
+        .banned-info {
+          color: #ff8c73;
+          font-size: 1.2rem;
+          margin-bottom: 20px;
+        }
+      `}</style>
     </div>
   );
 };
-
 
 const getAllOperatorsBySide = (side: 'a' | 'd', bans: string[]): OperatorsResponse => {
   const operator_names: string[] = [];
@@ -87,12 +98,11 @@ export default function Roulette() {
   const [side, setSide] = useState<'a' | 'd'>('a'); // 'a' for attackers, 'd' for defenders
   const [count, setCount] = useState(1);
   const [operators, setOperators] = useState<OperatorsResponse>({ operator_names: [], operator_icons: [] });
-  const [attackerBans, setAttackerBans] = useState<string[]>([]);
-  const [defenderBans, setDefenderBans] = useState<string[]>([]);
   const [bannedOperators, setBannedOperators] = useState<{ a: string[], d: string[] }>({ a: [], d: [] });
   const [randomOperators, setRandomOperators] = useState<OperatorsResponse>({ operator_names: [], operator_icons: [] });
   const [search, setSearch] = useState('');
-
+  const currentColor = side === 'a' ? '#0595fc' : '#fc8105';
+  
   useEffect(() => {
     fetchOperators();
   }, [side]);
@@ -140,7 +150,7 @@ export default function Roulette() {
 
   return (
     <div className="container">
-      <h1>Roulette</h1>
+      <h1>R6Roulette</h1>
       <div className="controls">
         <label>
           Count:{" "}
@@ -151,7 +161,7 @@ export default function Roulette() {
             value={count}
             onChange={(e) => setCount(parseInt(e.target.value))}
           />
-          {count}
+          &nbsp;{count}
         </label>
         <div className="switchContainer">
           <div className="left-side">Attackers</div>
@@ -161,11 +171,15 @@ export default function Roulette() {
           </label>
           <div className="right-side">Defenders</div>
         </div>
-        <button className="roulette-button" onClick={fetchRandomOperators}>Spin Roulette</button>
+        <button className="roulette-button" 
+        onClick={fetchRandomOperators} 
+        style={{backgroundColor: currentColor}}>
+          Spin Roulette
+        </button>
       </div>
       <div className="random-operators">
         {randomOperators.operator_names.map((operator, index) => (
-          <div key={operator} className="operator random-operator">
+          <div key={operator} className="operator random-operator" style={{ outline: `2px solid ${currentColor}` }}>
             <img src={randomOperators.operator_icons[index]} alt={operator} />
             {operator}
           </div>
@@ -178,7 +192,9 @@ export default function Roulette() {
         onChange={(e) => setSearch(e.target.value)}
         className="search-bar"
       />
-      <OperatorsComponent/>
+      
+      <OperatorsComponent bannedOperators={bannedOperators}/>
+      
       <div className="operators">
         {filteredOperators.map(({ name, icon }) => (
           <div
@@ -196,6 +212,13 @@ export default function Roulette() {
         ))}
       </div>
       <style jsx>{`
+        h1 {
+          padding: 10px;
+          font-size: 3rem;
+          font-weight: 700;
+          font-style: italic;
+        }
+        
         .container {
           background-color: #121212;
           color: #ffffff;
@@ -224,6 +247,7 @@ export default function Roulette() {
           margin: 0 10px;
         }
         .controls {
+          font-size: 1.15rem;
           margin-bottom: 20px;
           display: flex;
           flex-direction: column;
@@ -241,7 +265,7 @@ export default function Roulette() {
         }
 
         .slider {
-          background-color: #ccc;
+          background-color: #0595fc;
           bottom: 0;
           cursor: pointer;
           left: 0;
@@ -263,7 +287,7 @@ export default function Roulette() {
         }
 
         input:checked + .slider {
-          background-color: #66bb6a;
+          background-color: #fc8105;
         }
 
         input:checked + .slider:before {
@@ -279,13 +303,14 @@ export default function Roulette() {
         }
         
         .roulette-button {
-          background-color: #ff5733;
+          background-color: #44db1f;
           color: #ffffff;
           border: none;
           padding: 10px 20px;
           cursor: pointer;
           font-size: 1.2rem;
           margin-top: 10px;
+          border-radius: 10px;
         }
         .random-operators {
           display: flex;
@@ -298,9 +323,9 @@ export default function Roulette() {
           display: flex;
           flex-wrap: wrap;
           align-items: center;
-          gap: 10px;
+          gap: 1vw;
           width: 100%; 
-          max-width: 75vw;
+          max-width: 85vw;
           justify-content: center;
         }
         .operator {
@@ -348,7 +373,7 @@ export default function Roulette() {
         }
         .random-operator {
           transform: scale(1.2);
-          outline: 2px solid #ff5733;
+          outline: 2px solid #44db1f;
         }
         .random-operator:hover {
           background-color: #333;
@@ -356,8 +381,6 @@ export default function Roulette() {
         .banned-info {
           color: #111;
           font-size: 1.2rem;
-          margin: 10px;
-          
         }
       `}</style>
     </div>

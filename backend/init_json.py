@@ -82,7 +82,7 @@ if __name__ == "__main__":
     # parser.add_argument('--name', help='name of the JSON file')
     
     # args = parser.parse_args(sys.argv[1:])
-    location = "../frontend/r6roulette/public"
+    location = "../public"
     operator_data = OperatorData(location)
     defs, atks = operator_data.get_operators()
     operator_data.save_to_json(*defs, *atks)
